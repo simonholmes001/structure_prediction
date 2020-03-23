@@ -5,35 +5,45 @@ import scipy
 from scipy.spatial import distance
 
 W_PATH = '../coordinate_data'
+cif_names = []
+filenames = []
+filenames_2 = []
 
 
 class CreateDistanceMapsAdjacencyMatrix:
 
-    def __init__(self, walk_path):
+    def __init__(self, walk_path, cif_names, filenames, filenames_2):
         self.walk_path = walk_path
+        self.cif_names = cif_names
+        self.filenames = filenames
+        self.filenames_2 = filenames_2
 
-    def extract_critical_information(self):
-        """Converts .cif to .csv with only essential information"""
+    def prepare_filenames(self):
         for root, dirs, files in os.walk(self.walk_path, topdown=False):
             for name in files:
-                with open(self.walk_path + '/' + name.split('.')[0] + '.cif') as infile:
-                    target_list = infile.read().split('\n')
-                    df = pd.DataFrame(data=target_list, columns=["header"])  # Put list in a dataframe m X 1 column
-                    df_2 = df.header.str.split(expand=True)  # Put dataframe to m x 20 columns
-                    df_3 = df_2.drop(columns=[0, 2, 3, 4, 6, 7, 8, 9, 13, 14, 15, 16, 17, 18, 19, 20],
-                                     axis=1)  # Remove non essential columns
-                    return df_3.to_csv(self.walk_path + '/' + name.split('.')[0] + '.csv', encoding='utf-8', index=False,
-                                header=False)
-
-    def calculate_distance_maps(self):
-        """Creates the distance maps"""
-        filenames = []
-        for root, dirs, files in os.walk(self.walk_path, topdown=False):
-            for name in files:
+                self.cif_names.append(name)
                 if '.csv' in name:
-                    filenames.append(name)
+                    self.filenames.append(name)
+                if '2_' in name:
+                    self.filenames_2.append(name)
 
-        for name in filenames:
+        return self.cif_names, self.filenames, self.filenames_2
+
+    def extract_critical_information(self, cif_names):
+        """Converts .cif to .csv with only essential information"""
+        for name in self.cif_names:
+            with open(self.walk_path + '/' + name.split('.')[0] + '.cif') as infile:
+                target_list = infile.read().split('\n')
+                df = pd.DataFrame(data=target_list, columns=["header"])  # Put list in a dataframe m X 1 column
+                df_2 = df.header.str.split(expand=True)  # Put dataframe to m x 20 columns
+                df_3 = df_2.drop(columns=[0, 2, 3, 4, 6, 7, 8, 9, 13, 14, 15, 16, 17, 18, 19, 20],
+                                 axis=1)  # Remove non essential columns
+                df_3.to_csv(self.walk_path + '/' + name.split('.')[0] + '.csv', encoding='utf-8', index=False,
+                            header=False)
+
+    def calculate_distance_maps(self, filenames):
+        """Creates the distance maps"""
+        for name in self.filenames:
             read_csv_df = pd.read_csv(self.walk_path + '/' + name, header=None)
             read_csv_less_df = read_csv_df[:-1]
             remove_columns_df = read_csv_less_df.drop(columns=[0, 1], index=1)
@@ -41,25 +51,25 @@ class CreateDistanceMapsAdjacencyMatrix:
             calculate_distances = distance.pdist(convert_to_array, 'euclidean')
             make_square = distance.squareform(calculate_distances)
             to_df_for_saving = pd.DataFrame(make_square)
-            return to_df_for_saving.to_csv(self.walk_path + '/2_' + name, encoding='utf-8', index=False, header=False)
+            to_df_for_saving.to_csv(self.walk_path + '/2_' + name, encoding='utf-8', index=False, header=False)
 
-    def join_datasets(self):
+    def join_datasets(self, filenames, filenames_2):
         """Combines the datasets"""
-        filenames_2 = []
-        for root, dirs, files in os.walk(self.walk_path, topdown=False):
-            for name in files:
-                if '2_' in name:
-                    filenames_2.append(name)
-
-        for name in filenames:
-            for name_2 in filenames_2:
+        for name in self.filenames:
+            for name_2 in self.filenames_2:
                 df_1 = pd.read_csv(self.walk_path + '/' + name_2, header=None)
                 df_2 = pd.read_csv(self.walk_path + '/' + name, header=None)
                 df_join = pd.concat([df_2, df_1], axis=1, join='inner')  # Join the databases
-                return df_join.to_csv(self.walk_path + '/COMPLETE_' + name, encoding='utf-8', index=False, header=False)
+                df_join.to_csv(self.walk_path + '/COMPLETE_' + name, encoding='utf-8', index=False, header=False)
 
 def main():
-    CreateDistanceMapsAdjacencyMatrix(W_PATH)
+    create_maps = CreateDistanceMapsAdjacencyMatrix(W_PATH, cif_names, filenames, filenames_2)
+    create_maps.prepare_filenames()
+    create_maps.extract_critical_information(cif_names)
+    create_maps.prepare_filenames()
+    create_maps.calculate_distance_maps(filenames)
+    create_maps.prepare_filenames()
+    create_maps.join_datasets(filenames, filenames_2)
 
 if __name__ == '__main__':
     main()
