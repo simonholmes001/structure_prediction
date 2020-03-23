@@ -34,8 +34,13 @@ echo Deleting any empty coordinate files...
 bash ./structure_prediction/remove_empty_files.sh $2
 echo Clean-up completed
 
-echo Preparing distance adjacency matrix...
+echo Preparing distance adjacency matrix. This will take some time...
 python3 create_distance_maps_adjacency_matrix.py $2
+echo Distance maps created
+
+echo One-hot encoding amino acid files....
+python3 one_hot_encode_amino_acid_features.py
+echo One-hot encoding completed
 
 conda deactivate
 
