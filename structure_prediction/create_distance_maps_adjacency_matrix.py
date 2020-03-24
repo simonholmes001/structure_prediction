@@ -53,6 +53,7 @@ class CreateDistanceMapsAdjacencyMatrix:
             with open('./' + self.walk_path + '/' + name) as infile:
                 target_list = infile.read().split('\n')
                 df = pd.DataFrame(data=target_list, columns=["header"])  # Put list in a dataframe m X 1 column
+                df = df[:-1] # Delete last row of the dataframe which has been added in line above
                 df_2 = df.header.str.split(expand=True)  # Put dataframe to m x 20 columns
                 df_3 = df_2.drop(columns=[0, 2, 3, 4, 6, 7, 8, 9, 13, 14, 15, 16, 17, 18, 19, 20],
                                  axis=1)  # Remove non essential columns
@@ -65,8 +66,8 @@ class CreateDistanceMapsAdjacencyMatrix:
         print("Preparing distance maps...")
         for name in self.filenames:
             read_csv_df = pd.read_csv('./' + self.walk_path + '/' + name, header=None)
-            read_csv_less_df = read_csv_df[:-1]
-            remove_columns_df = read_csv_less_df.drop(columns=[0, 1], index=1)
+            read_csv_less_df = read_csv_df[:-1] # remove last row of the dataframe
+            remove_columns_df = read_csv_less_df.drop(columns=[0, 1], axis=1)
             convert_to_array = remove_columns_df.to_numpy()
             calculate_distances = distance.pdist(convert_to_array, 'euclidean')
             make_square = distance.squareform(calculate_distances)
