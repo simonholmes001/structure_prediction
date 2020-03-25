@@ -37,7 +37,7 @@ class CreateAdjacencyMatrix:
                     assert adjacency_matrix_df_4.shape[0] == df_join.shape[0]
                     df_join_2 = df_join.drop(columns=[10, 11, 12], axis=1) # Remove original coordinate information
                     assert df_join.shape[0] == df_join_2.shape[0]
-                    df_join_2.to_csv('./' + self.walk_path + '/adjacency_matrix_' + name, encoding='utf-8', index=False, header=False)
+                    df_join_2.to_csv('./' + self.walk_path + '/adjacency_matrix_' + name.split('.')[0] + '.csv', encoding='utf-8', index=False, header=False)
 
 def main():
     adj_mat = CreateAdjacencyMatrix(args.output_directory)
