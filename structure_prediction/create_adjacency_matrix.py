@@ -35,7 +35,9 @@ class CreateAdjacencyMatrix:
                     assert critical_info_to_df_3.shape[0] == adjacency_matrix_df_4.shape[0]
                     df_join = pd.concat([critical_info_to_df_3, adjacency_matrix_df_4], axis=1, join='inner')  # Join the databases
                     assert adjacency_matrix_df_4.shape[0] == df_join.shape[0]
-                    df_join.to_csv('./' + self.walk_path + '/adjacency_matrix_' + name, encoding='utf-8', index=False, header=False)
+                    df_join_2 = df_join.drop(columns=[10, 11, 12], axis=1) # Remove original coordinate information
+                    assert df_join.shape[0] == df_join_2.shape[0]
+                    df_join_2.to_csv('./' + self.walk_path + '/adjacency_matrix_' + name, encoding='utf-8', index=False, header=False)
 
 def main():
     adj_mat = CreateAdjacencyMatrix(args.output_directory)
