@@ -39,7 +39,7 @@ class CreateAdjacencyMatrix:
 
 def main():
     adj_mat = CreateAdjacencyMatrix(args.output_directory)
-    adj_mat.adjaceny_matrix()
+
 
 if __name__ == '__main__':
     main()
