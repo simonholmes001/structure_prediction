@@ -21,6 +21,7 @@ echo Virtual environment ready
 
 rm -rf ./$2
 rm -rf ./extracted_data
+rm -rf ./output
 
 echo Preparing to unpack files...
 bash ./structure_prediction/unpack_pdb_files.sh $1 # to unpack the pdf.cif.gz files & put all unpacked pdb.cif files in a folder called extracted_data/
@@ -30,17 +31,27 @@ echo Preparing to extract alpha C info...
 bash ./structure_prediction/extract_alpha_carbon_coordinate_info.sh $2 # to extract alpha-C coordinate information from the pdf.cif files in the extracted_data/ folder & to put them in the $2/ folder
 echo Extraction complete
 
-echo Deleting any empty coordinate files, DNA / RNA files for example...
+echo Deleting any empty coordinate files, DNA / RNA files as an example...
 bash ./structure_prediction/remove_empty_files.sh $2
 echo Clean-up completed
 
 echo Preparing distance adjacency matrix. This will take some time...
-python3 ./structure_prediction/create_distance_maps_adjacency_matrix.py -o $2
+python3 ./structure_prediction/create_adjacency_matrix.py -o $2
 echo Distance maps created
 
-echo Merging with amino acid features....
-python3 ./structure_prediction/merge_aaFeatures_coordinate_data.py -o $2
+echo Merging with amino acid features. This could stake some time....
+python3 ./structure_prediction/merge_aaFeatures_adjacency_matrix.py -o $2
 echo Merge completed
+
+mkdir ./output
+cd output && mkdir ./adjacency_matrix
+mkdir ./final_features
+cd ../$2
+mv adjacency* ../output/adjacency_matrix
+mv FINAL* ../output/final_features
+cd ../
+rm -rf ./$2
+rm -rf ./extracted_data
 
 conda deactivate
 
