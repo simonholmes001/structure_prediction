@@ -9,6 +9,8 @@
 
 * Free software: BSD license
 
+# Contents
+
 ## Objectives
 
 This project aims to investigate methods for the prediction of protein tertiary & quarternary structure based only on the amino acid primary sequence of the protein.
@@ -65,15 +67,15 @@ folder structure should now look like this:
 
 ```
 structure_prediction
-    - pdb/
-        - folders containting pdb.cif.gz files
-    - structure_prediction/
-        - scripts to run the project
-    - tests/
-    - create_datasets.sh
-    - environment.yml
-    - README.md
-    - standardised_features.csv
+    |- pdb/
+    |   |- folders containting pdb.cif.gz files
+    |- structure_prediction/
+    |   |- scripts to run the project
+    |- tests/
+    |- create_datasets.sh
+    |- environment.yml
+    |- README.md
+    |- standardised_features.csv
 ```
 
 ### Pre-Processing
@@ -110,6 +112,17 @@ Running this command will perform the following events:
 
 ## Model Training
 
+### Progress
+
+-[x] Pre-processing
+-[x] Adjacency matrix
+-[x] Save pytorch tensors as pickle objects
+-[ ] Preprocessing on large data sets
+-[ ] Unit tests
+-[ ] Model development
+-[ ] Training
+-[ ] Hyperparameter optimization
+-[ ] Evaluation
 
 # Background
 

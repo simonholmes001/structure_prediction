@@ -1,7 +1,10 @@
 import os
 import pandas as pd
+import numpy as np
 from tqdm import tqdm
 import argparse
+import torch
+import pickle
 
 parser = argparse.ArgumentParser(description='To set W_PATH to the same directory that contains the coordinate data extracted from the pdb.cif files')
 parser.add_argument('-o', '--output_directory', help='An output directory must be named', required=True)
@@ -31,10 +34,32 @@ class MergeAAFeatures:
                 if 'adjacency' in name:
                     adjacency_matrix_df = pd.read_csv('./' + self.walk_path +'/' + name, header=None)
                     adjacency_matrix_df.rename(columns={0:'amino_acid_label'}, inplace=True)
+                    protein_tags_df = pd.DataFrame(data=adjacency_matrix_df['amino_acid_label']) # Create a dataset of the protein's primary sequence
                     merge_amino_acids_and_features = pd.merge(self.amino_acids_df, self.standardised_features_df, on='CID', how='left')  # Join the databases
-                    merge_amino_acids_and_features.drop(columns=['CID'], axis=1, inplace=True)
-                    merge_features_and_adjacency = pd.merge(adjacency_matrix_df, merge_amino_acids_and_features, on='amino_acid_label', how='left')  # Join the databases
-                    merge_features_and_adjacency.to_csv('./' + self.walk_path + '/FINAL_' + name, encoding='utf-8', index=False, header=False)
+                    merge_amino_acids_and_features.drop(columns=['CID'], axis=1, inplace=True) # Remove potential duplicate columns for next step
+                    merge_features_and_protein_tag = pd.merge(protein_tags_df, merge_amino_acids_and_features, on='amino_acid_label', how='left')  # Join the databases
+
+                    # Convert to numpy arrays, pytorch tensor & save numpy & pickle
+
+                    # Adjacency matrix
+                    adjacency_to_array = adjacency_matrix_df.drop(columns=['amino_acid_label'], axis=1).to_numpy() # Convert to numpy array
+                    adjacency_to_tensor = torch.from_numpy(adjacency_to_array) # Convert to pytorch tensor
+                    with open('./' + self.walk_path + '/' + name.split('_')[2].split('.')[0] + '_label', 'wb') as file:
+                        pickle.dump(adjacency_to_tensor, file) # Save as a pickle object
+                    np.save('./' + self.walk_path + '/' + name.split('_')[2].split('.')[0] + '_adjacency', adjacency_to_array) # Save numpy array
+
+
+                    # Amino acid labels
+                    protein_tag_to_array = protein_tags_df.to_numpy()
+                    np.save('./' + self.walk_path + '/' + name.split('_')[2].split('.')[0] + '_amino_acid_tag', protein_tag_to_array)
+
+                    # Amino acid features
+                    features_to_array = merge_features_and_protein_tag.drop(columns=['amino_acid_label'], axis=1).to_numpy()
+                    features_to_tensor = torch.from_numpy(features_to_array) # Convert to pytorch tensor
+                    with open('./' + self.walk_path + '/' + name.split('_')[2].split('.')[0] + '_feature', 'wb') as file:
+                        pickle.dump(features_to_tensor, file) # Save as a pickle object
+                    np.save('./' + self.walk_path + '/' + name.split('_')[2].split('.')[0] + '_features', features_to_array)
+
 
 def main():
     merge = MergeAAFeatures(args.output_directory, amino_acids_df, standardised_features_df)

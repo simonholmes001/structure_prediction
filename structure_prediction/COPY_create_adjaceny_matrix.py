@@ -1,7 +1,5 @@
 import os
 import pandas as pd
-import numpy as np
-import scipy
 from scipy.spatial import distance
 from tqdm import tqdm
 import argparse
@@ -53,12 +51,12 @@ class CreateDistanceMapsAdjacencyMatrix:
             with open('./' + self.walk_path + '/' + name) as infile:
                 target_list = infile.read().split('\n')
                 df = pd.DataFrame(data=target_list, columns=["header"])  # Put list in a dataframe m X 1 column
-                df = df[:-1] # Delete last row of the dataframe which has been added in line above
+                # df = df[:-1] # Delete last row of the dataframe which has been added in line above
                 df_2 = df.header.str.split(expand=True)  # Put dataframe to m x 20 columns
-                df_3 = df_2.drop(columns=[0, 2, 3, 4, 6, 7, 8, 9, 13, 14, 15, 16, 17, 18, 19, 20],
-                                 axis=1)  # Remove non essential columns
-                df_3.to_csv('./' + self.walk_path + '/' + name.split('.')[0] + '.csv', encoding='utf-8', index=False,
-                            header=False)
+                assert df.shape[0] == df_2.shape[0]
+                df_3 = df_2.drop(columns=[0, 2, 3, 4, 6, 7, 8, 9, 13, 14, 15, 16, 17, 18, 19, 20], axis=1)  # Remove non essential columns
+                assert df_2.shape[0] == df_3.shape[0]
+                df_3.to_csv('./' + self.walk_path + '/' + name.split('.')[0] + '.csv', encoding='utf-8', index=False, header=False)
         print("Extraction complete")
 
     def calculate_distance_maps(self, filenames):
@@ -66,12 +64,14 @@ class CreateDistanceMapsAdjacencyMatrix:
         print("Preparing distance maps...")
         for name in self.filenames:
             read_csv_df = pd.read_csv('./' + self.walk_path + '/' + name, header=None)
-            read_csv_less_df = read_csv_df[:-1] # remove last row of the dataframe
-            remove_columns_df = read_csv_less_df.drop(columns=[0, 1], axis=1)
+            # read_csv_less_df = read_csv_df[:-1] # remove last row of the dataframe
+            remove_columns_df = read_csv_df.drop(columns=[0, 1], axis=1)
+            assert read_csv_df.shape[0] == remove_columns_df.shape[0]
             convert_to_array = remove_columns_df.to_numpy()
             calculate_distances = distance.pdist(convert_to_array, 'euclidean')
             make_square = distance.squareform(calculate_distances)
             to_df_for_saving = pd.DataFrame(make_square)
+            assert remove_columns_df.shape[0] == to_df_for_saving.shape[0]
             to_df_for_saving.to_csv('./' + self.walk_path + '/2_' + name, encoding='utf-8', index=False, header=False)
         print("Distance maps completed")
 
@@ -82,7 +82,9 @@ class CreateDistanceMapsAdjacencyMatrix:
             for name_2 in self.filenames_2:
                 df_1 = pd.read_csv('./' + self.walk_path + '/' + name_2, header=None)
                 df_2 = pd.read_csv('./' + self.walk_path + '/' + name, header=None)
+                assert df_1.shape[0] == df_2.shape[0]
                 df_join = pd.concat([df_2, df_1], axis=1, join='inner')  # Join the databases
+                assert df_2.shape[0] == df_join.shape[0]
                 df_join.to_csv('./' + self.walk_path + '/COMPLETE_' + name, encoding='utf-8', index=False, header=False)
         print("Process complete")
 
