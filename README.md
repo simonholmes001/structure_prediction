@@ -115,13 +115,21 @@ Running this command will perform the following events:
 ### Progress
 
 -[x] Pre-processing
+
 -[x] Adjacency matrix
+
 -[x] Save pytorch tensors as pickle objects
+
 -[ ] Preprocessing on large data sets
+
 -[ ] Unit tests
+
 -[ ] Model development
+
 -[ ] Training
+
 -[ ] Hyperparameter optimization
+
 -[ ] Evaluation
 
 # Background
