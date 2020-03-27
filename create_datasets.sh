@@ -43,16 +43,23 @@ echo Merging with amino acid features. This could stake some time....
 python3 ./structure_prediction/merge_aaFeatures_adjacency_matrix.py -o $2
 echo Merge completed
 
+# Create the output folder and transfer files there
 mkdir ./output
 cd output && mkdir ./adjacency_matrix
 mkdir ./final_features
+mkdir ./pickle
+
 cd ../$2
-mv adjacency* ../output/adjacency_matrix
-mv FINAL* ../output/final_features
+mv adjacency*.csv ../output/adjacency_matrix
+mv *.npy ../output/final_features
+mv *_label ../output/pickle
+mv *_feature ../output/pickle
 cd ../
 rm -rf ./$2
 rm -rf ./extracted_data
 
 conda deactivate
 
+echo All files have been processed
+echo
 echo Script completed. You can now start training the model.
