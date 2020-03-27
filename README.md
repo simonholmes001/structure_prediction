@@ -7,7 +7,7 @@
 [![Code Intelligence Status](https://scrutinizer-ci.com/g/simonholmes001/amino_acid_feature_extraction/badges/code-intelligence.svg?b=master)](https://scrutinizer-ci.com/code-intelligence)
 [![license](https://img.shields.io/pypi/l/sphinx_rtd_theme.svg)](https://pypi.python.org/pypi/sphinx_rtd_theme/)
 
-* Free software: BSD license
+* BSD license
 
 # Contents
 
@@ -44,9 +44,9 @@ Downloading the entire PDB data base will take approx 2 1/2 days & will require 
 Running these scripts will download a number of folders, with each folder containing a number of gzip files.
 These files contain the experimentally determined 3D coordinate structures of various proteins. In addition to the x-, y-
 & z-atomic coordinates, the files contain metadata explaining the experimental design, structural resolution, author information,
-and a number of other items pertaining to the 3D structure determination. The files are in a .mmcif format.
+and a number of other items pertaining to the 3D structure determination. The files are in a `.cif` format (Crystallographic Information File).
 
-Data should be downloaded into a folder in the main repo (see [below](#below)). A small sample of the PDB can be downloaded from [here](http://bit.ly/2UhN8r7).
+Data should be downloaded into a folder in the main repo (see [below](#below)). A small sample of the PDB can be downloaded from [here](http://bit.ly/2Qv1seW) (use the files in the `data/` folder.
 
 ## Development
 
