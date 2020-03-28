@@ -50,7 +50,8 @@ mkdir ./final_features
 mkdir ./pickle
 
 cd ../$2
-mv adjacency*.csv ../output/adjacency_matrix
+mv *adjacency*.csv ../output/adjacency_matrix
+mv *amino*.csv ../output/final_features
 mv *.npy ../output/final_features
 mv *_label ../output/pickle
 mv *_feature ../output/pickle

@@ -27,16 +27,17 @@ pwd # in /structure_prediction/data
 
 mkdir extracted_data
 # Add in stepwise movement of files for entire PDB otherwise script fails as mv command too much
-mv 0*.cif extracted_data
-mv 1*.cif extracted_data
-mv 2*.cif extracted_data
-mv 3*.cif extracted_data
-mv 4*.cif extracted_data
-mv 5*.cif extracted_data
-mv 6*.cif extracted_data
-mv 7*.cif extracted_data
-mv 8*.cif extracted_data
-mv 9*.cif extracted_data
+#mv 0*.cif extracted_data
+#mv 1*.cif extracted_data
+#mv 2*.cif extracted_data
+#mv 3*.cif extracted_data
+#mv 4*.cif extracted_data
+#mv 5*.cif extracted_data
+#mv 6*.cif extracted_data
+#mv 7*.cif extracted_data
+#mv 8*.cif extracted_data
+#mv 9*.cif extracted_data
+mv *.cif extracted_data
 mv extracted_data ../
 cd ../
 rm -rf $*
