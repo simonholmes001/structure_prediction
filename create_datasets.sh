@@ -36,7 +36,7 @@ bash ./structure_prediction/remove_empty_files.sh $2
 echo Clean-up completed
 
 echo Preparing distance adjacency matrix. This will take some time...
-python3 ./structure_prediction/create_adjacency_matrix.py -o $2
+python3 ./structure_prediction/run_create_adjacency_matrix.py -o $2
 echo Distance maps created
 
 echo Merging with amino acid features. This could stake some time....
@@ -53,8 +53,8 @@ cd ../$2
 mv *adjacency*.csv ../output/adjacency_matrix
 mv *amino*.csv ../output/final_features
 mv *.npy ../output/final_features
-mv *_label ../output/pickle
-mv *_feature ../output/pickle
+mv *_label* ../output/pickle
+mv *_feature* ../output/pickle
 cd ../
 rm -rf ./$2
 rm -rf ./extracted_data

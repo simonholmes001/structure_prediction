@@ -45,8 +45,11 @@ class MergeAAFeatures:
                     # Amino acid features
                     features_to_array = merge_features_and_amino.drop(columns=['amino_acid_label'], axis=1).to_numpy()
                     features_to_tensor = torch.from_numpy(features_to_array) # Convert to pytorch tensor
-                    with open('./' + self.walk_path + '/' + name.split('_')[0] + '_feature', 'wb') as file:
-                        pickle.dump(features_to_tensor, file) # Save as a pickle object
+                    try:
+                        with open('./' + self.walk_path + '/' + name.split('_')[0] + '_feature.pickle', 'wb', buffering=500000000) as file:
+                            pickle.dump(features_to_tensor, file) # Save as a pickle object
+                    except:
+                        pass
                     np.save('./' + self.walk_path + '/' + name.split('_')[0] + '_features', features_to_array)
 
 
