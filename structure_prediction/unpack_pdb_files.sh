@@ -24,6 +24,8 @@ do
     cd ../
 done
 pwd # in /structure_prediction/data
+RES=$(find ${SOURCE} -type f | wc -l)
+echo $RES
 
 mkdir extracted_data
 # Add in stepwise movement of files for entire PDB otherwise script fails as mv command too much
@@ -42,3 +44,4 @@ mv extracted_data ../
 cd ../
 rm -rf $*
 pwd # in /structure_prediction/
+echo $RES
