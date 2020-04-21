@@ -145,7 +145,7 @@ To download coordinate files in PDB Exchange Format using the macromolecular Cry
 
 
 ```bash
-
+time
 rsync -rlpt -v -z --delete --port=33444 \
 rsync.rcsb.org::ftp_data/structures/divided/mmCIF/ ./mmCIF
 ```

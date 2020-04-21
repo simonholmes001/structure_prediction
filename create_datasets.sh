@@ -10,6 +10,7 @@ if [ $# -ne 2 ]; then
 fi
 
 # Preparation of a virtual environment
+# Commented out when running massive batch processing
 echo Creating virtual environment for data preparation...
 ENV=$(cat ./environment.yml | grep name | cut -f 2 -d ':')
 conda update -n base conda # to update to latest version of conda
@@ -21,7 +22,7 @@ echo Virtual environment ready
 
 rm -rf ./$2
 rm -rf ./extracted_data
-rm -rf ./output
+rm -rf ./output # Commented out when running large batch transfers as use /output/ folder in background tasks
 
 echo Preparing to unpack files...
 bash ./structure_prediction/unpack_pdb_files.sh $1 # to unpack the pdf.cif.gz files & put all unpacked pdb.cif files in a folder called extracted_data/
@@ -44,7 +45,7 @@ python3 ./structure_prediction/merge_aaFeatures_adjacency_matrix.py -o $2
 echo Merge completed
 
 # Create the output folder and transfer files there
-mkdir ./output
+mkdir ./output # Commented out when running large batch transfers as use /output/ folder in background tasks
 cd output && mkdir ./adjacency_matrix
 mkdir ./final_features
 mkdir ./pickle
