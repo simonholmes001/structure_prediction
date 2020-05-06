@@ -3,9 +3,9 @@
 """Tests for `create_distance_maps_adjacency_matrix` package."""
 
 import os
+import numpy as np
+from scipy.spatial import distance
 import unittest
-from structure_prediction import create_adjacency_matrix
-
 
 class TestCreate(unittest.TestCase):
     """Tests for `create_distance_maps_adjacency_matrix` package."""
@@ -18,49 +18,75 @@ class TestCreate(unittest.TestCase):
 
     def test_001_create_distance_ok(self):
         """
-        Test that shape of dataframes is maintained during the different manipulations
+        Test calculation of distance matrix
         """
-        cif_names = ['11bg.cif', '123l.cif']
-        walk_path = 'tests/test_data'
+        test_array = np.array([[3, 2, 4],
+                               [3, 0, 1],
+                               [5, 3, 2]])
+        test_distance_array = np.array([[0, np.sqrt((3-3)**2 + (2-0)**2 + (4-1)**2), np.sqrt((3-5)**2 + (2-3)**2 + (4-2)**2)],
+                                        [np.sqrt((3-3)**2 + (0-2)**2 + (1-4)**2), 0, np.sqrt((3-5)**2 + (0-3)**2 + (1-2)**2)],
+                                        [np.sqrt((5-3)**2 + (3-2)**2 + (2-4)**2), np.sqrt((5-3)**2 + (3-0)**2 + (2-1)**2), 0]])
 
-        create_adjacency_matrix(cif_names)
+        calculate_distances = distance.pdist(test_array, 'euclidean')
+        make_square = distance.squareform(calculate_distances)
 
-    #     pubchem_api.ApiGetFeatures(base_url, compound_cid_selector, search_id, property, output_property, output_format, output_file_name)
-    #
-    #     with open(output_file_name+".txt", "r") as f:
-    #         contents = f.read()
-    #         assert(contents == "status code is 200.")
-    #
-    #     os.remove(output_file_name+".txt")
-    #     os.remove(output_file_name+".csv")
-    #
-    # # def test_002_mock_is_ok(self):
-    # #     """Mock testing"""
-    # #     base_url = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/"
-    # #     compound_cid_selector = "compound/cid/"
-    # #     search_id = "6322/"
-    # #     property = "property/"
-    # #     output_property = "MolecularWeight/"
-    # #     output_format = "CSV"
-    # #     output_file_name = "test_data"
-    # #     with mock.patch('requests.get') as mocker:
-    # #         resp_mock = mock.NonCallableMagicMock(spec_set = requests.Response())
-    # #         resp_mock.url  = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/6322/property/MolecularWeight/CSV'
-    # #         resp_mock.status_code = 200
-    # #         mocker.return_value = resp_mock
-    # #
-    # #         resp = requests.get(pubchem_api.ApiGetFeatures(base_url, compound_cid_selector, search_id, property, output_property, output_format, output_file_name))
-    # #
-    # #         assert resp.status_code == 200
-    # #         assert resp.url == 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/6322/property/MolecularWeight/CSV'
-    # #         assert mocker.called
-    #
-    # def test_command_line_interface(self):
-    #     """Test the CLI."""
-    #     runner = CliRunner()
-    #     result = runner.invoke(cli.main)
-    #     assert result.exit_code == 0
-    #     assert 'pubchem_api.cli.main' in result.output
-    #     help_result = runner.invoke(cli.main, ['--help'])
-    #     assert help_result.exit_code == 0
-    #     assert '--help  Show this message and exit.' in help_result.output
+        test_distance_list = []
+        for i in range(test_distance_array.shape[0]):
+            for j in range(test_distance_array.shape[1]):
+                test_distance_list.append(test_distance_array[i,j])
+
+        test_makesquare_list = []
+        for m in range(make_square.shape[0]):
+            for n in range(make_square.shape[1]):
+                test_makesquare_list.append(make_square[m,n])
+
+        for i in range(0, len(test_distance_list)):
+            assert test_distance_list[i] == test_makesquare_list[i]
+
+        for i in range(0, len(test_makesquare_list)):
+            assert test_makesquare_list[i] == test_distance_list[i]
+
+        test_1 = np.array([[1, 2, 3],
+                           [4, 5, 6]])
+        test_2 = np.array([[1, 2, 3],
+                           [4, 5, 6]])
+
+        test_1_list = []
+        for i in range(test_1.shape[0]):
+            for j in range(test_1.shape[1]):
+                test_1_list.append(test_1[i,j])
+
+        test_2_list = []
+        for m in range(test_2.shape[0]):
+            for n in range(test_2.shape[1]):
+                test_2_list.append(test_2[m,n])
+
+        for i in range(0, len(test_1_list)):
+            assert test_1_list[i] == test_2_list[i]
+
+    def test_002_coordinate_calculation(self):
+        """
+        Test calculation of coordinates from distance matrix
+        """
+        test_array = np.random.randint(10, size=(100, 3))
+
+        calculate_distances = distance.pdist(test_array, 'euclidean')
+        distance_map = distance.squareform(calculate_distances)
+
+        print(distance_map)
+
+        structure = np.zeros(distance_map.shape)
+        for i in range(0,distance_map.shape[0]):
+            for j in range(0,distance_map.shape[1]):
+                structure[i,j] = 1/2 * (distance_map[i,0]**2 + distance_map[0,j]**2 - distance_map[i,j]**2)
+
+
+        w, v = np.linalg.eigh(structure)
+        nb_components = 3 # 3D
+        ZZ = np.matmul(v[:,-nb_components:], np.diag(np.sqrt(w[-nb_components:])))
+
+        ZZ_distances = distance.pdist(ZZ, 'euclidean')
+        ZZ_distance_map = distance.squareform(ZZ_distances)
+
+        print('\n')
+        print(ZZ_distance_map)
