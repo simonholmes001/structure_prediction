@@ -90,3 +90,6 @@ class TestCreate(unittest.TestCase):
 
         print('\n')
         print(ZZ_distance_map)
+        print(type(ZZ_distance_map))
+
+        self.assertTrue(np.allclose(distance_map, ZZ_distance_map))
